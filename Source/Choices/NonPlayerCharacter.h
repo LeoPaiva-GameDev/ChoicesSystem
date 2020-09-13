@@ -21,15 +21,15 @@ void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, 
 UFUNCTION()
 void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
-UFUNCTION()
-void Talk(USoundBase* Dialog, TArray<FSubtitle> Subtitles);
+/*UFUNCTION()
+void Talk(USoundBase* Dialog, TArray<FSubtitle> Subtitles);*/
 
 
 public:
 	// Sets default values for this character's properties
 	ANonPlayerCharacter();
 	
-	void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
+	//void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
 	
 	UDataTable* GetPlayerLines() { return PlayerSpeechChoice; }
 

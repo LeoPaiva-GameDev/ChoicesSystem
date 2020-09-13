@@ -72,15 +72,11 @@ void AChoicesCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AChoicesCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AChoicesCharacter::TouchStopped);
 
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AChoicesCharacter::OnResetVR);
+	
 }
 
 
-void AChoicesCharacter::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
+
 
 void AChoicesCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
