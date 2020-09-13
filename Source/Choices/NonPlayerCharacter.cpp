@@ -1,6 +1,7 @@
 // Code by Leonardo Paiva
 
-
+#include "Components/AudioComponent.h"
+#include "Components/BoxComponent.h"
 #include "NonPlayerCharacter.h"
 
 // Sets default values
@@ -13,7 +14,7 @@ ANonPlayerCharacter::ANonPlayerCharacter()
 	BoxComponent->SetupAttachment(GetRootComponent());
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(FName("AudioComponent"));
-	//AudioComponent->SetupAttachment(GetRootComponent());
+	AudioComponent->SetupAttachment(BoxComponent);
 
 }
 
@@ -22,8 +23,19 @@ void ANonPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &ANonPlayerCharacter::OnBoxOverlapBegin);
+    BoxComponent->OnComponentEndOverlap.AddDynamic(this, &ANonPlayerCharacter::OnBoxOverlapEnd);
 }
 
+void ANonPlayerCharacter::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	
+}
+
+void ANonPlayerCharacter::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	
+}
 
 
 
