@@ -33,7 +33,7 @@ private:
 
 	UDataTable* AvailableLines;
 
-	//FDialog RetrieveDialog(UDataTable* TableToSearch, FName RowName);
+	FDialog* RetrieveDialog(UDataTable* TableToSearch, FName RowName);
 
 	
 public:
@@ -64,7 +64,7 @@ public:
 	void SetTalkRangeStatus(bool Status) { bIsInInteractionRange = Status; }
  
 	/*Sets a new associated pawn*/
-	void SetAssociatedPawn(ANonPlayerCharacter* Pawn) { AssociatedNPC = Pawn; }
+	void SetAssociatedNPC(ANonPlayerCharacter* Pawn) { AssociatedNPC = Pawn; }
  
 	/*Retrieves the UI reference*/
 	FORCEINLINE UChoicesUI* GetUI() { return UI; }

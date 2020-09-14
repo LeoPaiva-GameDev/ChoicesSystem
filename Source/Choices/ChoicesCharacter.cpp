@@ -153,17 +153,82 @@ void AChoicesCharacter::ToggleTalking()
 	}
 }
 
-/*FDialog AChoicesCharacter::RetrieveDialog(UDataTable* TableToSearch, FName RowName)
+FDialog* AChoicesCharacter::RetrieveDialog(UDataTable* TableToSearch, FName RowName)
 {
-	/
-}*/
+	if(!TableToSearch) return nullptr;
+ 
+	//The table is valid - retrieve the given row if possible
+	FString ContextString;
+	return TableToSearch->FindRow<FDialog>(RowName, ContextString);
+}
 
 void AChoicesCharacter::GeneratePlayerLines(UDataTable& PlayerLines)
 {
-	
+	//Get all the row names of the table
+	TArray<FName> PlayerOptions = PlayerLines.GetRowNames();
+ 
+	//For each row name try to retrieve the contents of the table
+	for (auto It : PlayerOptions)
+	{
+		//Retrieve the contents of the table
+		FDialog* Dialog = RetrieveDialog(&PlayerLines, It);
+ 
+		if (Dialog)
+		{
+			//We retrieved a valid row - populate the questions array with our excerpts
+			Questions.Add(Dialog->QuestionExcerpt);
+		}
+	}
+ 
+	//Make sure to create a reference of the available line for later use
+	AvailableLines = &PlayerLines;
 }
 
 void AChoicesCharacter::Talk(FString Excerpt, TArray<FSubtitle>& Subtitles)
 {
-	
+	//Get all the row names based on our stored lines
+	TArray<FName> PlayerOptions = AvailableLines->GetRowNames();
+ 
+	for (auto It : PlayerOptions)
+	{
+		//Search inside the available lines table to find the pressed Excerpt from the UI
+		FDialog* Dialog = RetrieveDialog(AvailableLines, It);
+ 
+		if (Dialog && Dialog->QuestionExcerpt == Excerpt)
+		{
+			//We've found the pressed excerpt - assign our sfx to the audio comp and play it
+			AudioComp->SetSound(Dialog->SFX);
+			AudioComp->Play();
+ 
+			//Update the corresponding subtitles
+			Subtitles = Dialog->Subtitles;
+ 
+ 
+			if (UI && AssociatedNPC && Dialog->bShouldAIAnswer)
+			{
+				//Calculate the total displayed time for our subtitles
+				//When the subtitles end - the associated pawn will be able to talk to our character
+ 
+				TArray<FSubtitle> SubtitlesToDisplay;
+ 
+				float TotalSubsTime = 0.f;
+				
+				for (int32 i = 0; i < Subtitles.Num(); i++)
+				{
+					TotalSubsTime += Subtitles[i].AssociatedTime;
+				}
+ 
+				//Just a hardcoded value in order for the AI not to answer right after our subs.
+				//It would be better if we expose that to our editor? Sure!
+				TotalSubsTime += 1.f;
+ 
+				//Tell the associated pawn to answer to our character after the specified time!
+				AssociatedNPC->AnswerToPlayer(It, SubtitlesToDisplay, TotalSubsTime);
+ 
+			}
+			else if (!Dialog->bShouldAIAnswer) ToggleTalking();
+			break;
+ 
+		}
+	}
 }

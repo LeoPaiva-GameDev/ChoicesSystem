@@ -2,6 +2,8 @@
 
 #include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
+#include "ChoicesCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "NonPlayerCharacter.h"
 
 // Sets default values
@@ -29,13 +31,55 @@ void ANonPlayerCharacter::BeginPlay()
 
 void ANonPlayerCharacter::OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+	if (OtherActor->IsA<AChoicesCharacter>())
+	{
+		Character = Cast<AChoicesCharacter>(OtherActor);
+		Character->SetTalkRangeStatus(true);
+		Character->GeneratePlayerLines(*PlayerSpeechChoice);
+		Character->SetAssociatedNPC(this);
+	}
 }
 
 void ANonPlayerCharacter::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
+	if (OtherActor->IsA<AChoicesCharacter>())
+	{
+		Character = Cast<AChoicesCharacter>(OtherActor);
+		Character->SetTalkRangeStatus(false);
+		Character->SetAssociatedNPC(nullptr);
+	}
 }
 
+void  ANonPlayerCharacter::Talk(USoundBase* SpeechSound, TArray<FSubtitle> Subtitles)
+{
+	Character = Cast<AChoicesCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	
+	//Play the corresponding sfx
+	AudioComponent->SetSound(SpeechSound);
+	AudioComponent->Play();
+ 
+	//Tell the UI to update with the new subtitles
+	Character->GetUI()->UpdateSubtitles(Subtitles);
+}
 
-
+void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay)
+{
+	if (!NPCLines) return;
+ 
+	//Retrieve the corresponding line
+	FString ContextString;
+	FDialog* Dialog = NPCLines->FindRow<FDialog>(PlayerLine, ContextString);
+ 
+	Character = Cast<AChoicesCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+ 
+	if (Dialog && Character)
+	{
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDel;
+ 
+		TimerDel.BindUFunction(this, FName("Talk"), Dialog->SFX, Dialog->Subtitles);
+ 
+		//Talk to the player after the delay time has passed
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, delay, false);
+	}
+}

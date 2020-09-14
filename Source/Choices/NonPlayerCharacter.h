@@ -7,31 +7,36 @@
 #include "Engine/DataTable.h"
 #include "Subtitle.h"
 #include "Components/BoxComponent.h"
+#include "ChoicesCharacter.h"
 #include "NonPlayerCharacter.generated.h"
 
+class AChoicesCharacter;
 UCLASS()
 class CHOICES_API ANonPlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 	
-private: 
-UFUNCTION()
-void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+private:
 
-UFUNCTION()
-void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	AChoicesCharacter* Character;
+	
+	UFUNCTION()
+	void OnBoxOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-/*UFUNCTION()
-void Talk(USoundBase* Dialog, TArray<FSubtitle> Subtitles);*/
+	UFUNCTION()
+	void OnBoxOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void Talk(USoundBase* Dialog, TArray<FSubtitle> Subtitles);
 
 
 public:
 	// Sets default values for this character's properties
 	ANonPlayerCharacter();
 	
-	//void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
+	void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
 	
-	UDataTable* GetPlayerLines() { return PlayerSpeechChoice; } 
+	FORCEINLINE UDataTable* GetPlayerLines() { return PlayerSpeechChoice; } 
 
 protected:
 	// Called when the game starts or when spawned
