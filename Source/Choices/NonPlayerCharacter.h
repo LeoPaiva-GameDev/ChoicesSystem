@@ -7,7 +7,6 @@
 #include "Engine/DataTable.h"
 #include "Subtitle.h"
 #include "Components/BoxComponent.h"
-#include "ChoicesCharacter.h"
 #include "NonPlayerCharacter.generated.h"
 
 class AChoicesCharacter;
@@ -34,7 +33,7 @@ public:
 	// Sets default values for this character's properties
 	ANonPlayerCharacter();
 	
-	void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
+	void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float Delay);
 	
 	FORCEINLINE UDataTable* GetPlayerLines() { return PlayerSpeechChoice; } 
 

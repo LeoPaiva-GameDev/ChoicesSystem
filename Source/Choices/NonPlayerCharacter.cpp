@@ -62,7 +62,7 @@ void  ANonPlayerCharacter::Talk(USoundBase* SpeechSound, TArray<FSubtitle> Subti
 	Character->GetUI()->UpdateSubtitles(Subtitles);
 }
 
-void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay)
+void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float Delay)
 {
 	if (!NPCLines) return;
  
@@ -80,6 +80,6 @@ void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& Su
 		TimerDel.BindUFunction(this, FName("Talk"), Dialog->SFX, Dialog->Subtitles);
  
 		//Talk to the player after the delay time has passed
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, delay, false);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, Delay, false);
 	}
 }
