@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -43,8 +44,15 @@ AChoicesCharacter::AChoicesCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
 
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	////////////////////
+	bIsTalking = false;
+	bIsInInteractionRange = false;
+	AssociatedNPC = nullptr;
+ 
+	AudioComp = CreateDefaultSubobject<UAudioComponent>(FName("AudioComp"));
+	AudioComp->SetupAttachment(GetRootComponent());
+
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -60,17 +68,14 @@ void AChoicesCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("MoveForward", this, &AChoicesCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AChoicesCharacter::MoveRight);
 
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AChoicesCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AChoicesCharacter::LookUpAtRate);
 
-	// handle touch devices
-	PlayerInputComponent->BindTouch(IE_Pressed, this, &AChoicesCharacter::TouchStarted);
-	PlayerInputComponent->BindTouch(IE_Released, this, &AChoicesCharacter::TouchStopped);
+	//////////
+	PlayerInputComponent->BindAction("Talk", IE_Pressed, this, &AChoicesCharacter::ToggleTalking);	
 
 	
 }
@@ -102,7 +107,7 @@ void AChoicesCharacter::LookUpAtRate(float Rate)
 
 void AChoicesCharacter::MoveForward(float Value)
 {
-	if ((Controller != NULL) && (Value != 0.0f))
+	if ((Controller != NULL) && (Value != 0.0f) && (!bIsTalking))
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -116,7 +121,7 @@ void AChoicesCharacter::MoveForward(float Value)
 
 void AChoicesCharacter::MoveRight(float Value)
 {
-	if ( (Controller != NULL) && (Value != 0.0f) )
+	if ( (Controller != NULL) && (Value != 0.0f) && !bIsTalking)
 	{
 		// find out which way is right
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -127,4 +132,38 @@ void AChoicesCharacter::MoveRight(float Value)
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
 	}
+}
+
+void AChoicesCharacter::ToggleTalking()
+{
+	if (bIsInInteractionRange)
+	{
+		//If we are in talk range handle the talk status and the UI
+		bIsTalking = !bIsTalking;
+		ToggleUI();
+		if (bIsTalking && AssociatedNPC)
+		{
+			//The associated pawn is polite enough to face us when we talk to him!
+			FVector Location = AssociatedNPC->GetActorLocation();
+			FVector TargetLocation = GetActorLocation();
+ 
+			AssociatedNPC->SetActorRotation((TargetLocation - Location).Rotation());
+		}
+ 
+	}
+}
+
+/*FDialog AChoicesCharacter::RetrieveDialog(UDataTable* TableToSearch, FName RowName)
+{
+	/
+}*/
+
+void AChoicesCharacter::GeneratePlayerLines(UDataTable& PlayerLines)
+{
+	
+}
+
+void AChoicesCharacter::Talk(FString Excerpt, TArray<FSubtitle>& Subtitles)
+{
+	
 }
