@@ -31,7 +31,7 @@ public:
 	
 	//void AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& SubtitlesToDisplay, float delay);
 	
-	UDataTable* GetPlayerLines() { return PlayerSpeechChoice; }
+	UDataTable* GetPlayerLines() { return PlayerSpeechChoice; } 
 
 protected:
 	// Called when the game starts or when spawned
@@ -43,10 +43,10 @@ protected:
     UPROPERTY(VisibleAnywhere)
     UAudioComponent* AudioComponent;
 
-	UPROPERTY(EditAnywhere, Category = DialogSystem)
+	UPROPERTY(EditAnywhere, Category = ChoiceSystem)
     UDataTable* PlayerSpeechChoice;
 
-	UPROPERTY(EditAnywhere, Category = DialogSystem)
+	UPROPERTY(EditAnywhere, Category = ChoiceSystem)
     UDataTable* NPCLines;
     	
 

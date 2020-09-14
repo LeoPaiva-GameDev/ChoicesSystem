@@ -3,3 +3,7 @@
 
 #include "ChoicesUI.h"
 
+void UChoicesUI::UpdateSubtitles(TArray<FSubtitle> Subtitles) 
+{
+    
+}
