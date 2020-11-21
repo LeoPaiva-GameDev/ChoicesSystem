@@ -31,10 +31,8 @@ public:
 
 class UMGAsyncTask : public FNonAbandonableTask
 {
-	/*The subtitles that we're going to display*/
 	TArray<FSubtitle> Subs;
  
-	/*UI Reference*/
 	UChoicesUI* ChoicesUI;
  
 public:
@@ -46,28 +44,23 @@ public:
 		this->ChoicesUI = ChoicesUI;
 	}
  
-	/*Function needed by the UE in order to determine what's the tasks' status*/
 	FORCEINLINE TStatId GetStatId() const
 	{
 		RETURN_QUICK_DECLARE_CYCLE_STAT(UMGAsyncTask, STATGROUP_ThreadPoolAsyncTasks);
 	}
  
-	/*This function executes each time this thread is active - UE4 searches for a function named DoWord() and executes it*/
+	//This function executes each time this thread is active
 	void DoWork()
 	{
 		for (int32 i = 0; i < Subs.Num(); i++)
 		{
-			//Sleep means that we pause this thread for the given time
 			FPlatformProcess::Sleep(Subs[i].AssociatedTime);
  
-			//Update our subtitles after the thread comes back
 			ChoicesUI->SubtitleToDisplay = Subs[i].Subtitle;
 		}
  
-		//Sleep 1 second to let the user read the text
 		FPlatformProcess::Sleep(1.f);
  
-		//Clear the subtitle
 		ChoicesUI->SubtitleToDisplay = FString("");
 	}
 };
