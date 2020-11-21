@@ -53,12 +53,9 @@ void ANonPlayerCharacter::OnBoxOverlapEnd(UPrimitiveComponent* OverlappedCompone
 void  ANonPlayerCharacter::Talk(USoundBase* SpeechSound, TArray<FSubtitle> Subtitles)
 {
 	Character = Cast<AChoicesCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-	
-	//Play the corresponding sfx
+
 	AudioComponent->SetSound(SpeechSound);
 	AudioComponent->Play();
- 
-	//Tell the UI to update with the new subtitles
 	Character->GetUI()->UpdateSubtitles(Subtitles);
 }
 
@@ -66,7 +63,6 @@ void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& Su
 {
 	if (!NPCLines) return;
  
-	//Retrieve the corresponding line
 	FString ContextString;
 	FDialog* Dialog = NPCLines->FindRow<FDialog>(PlayerLine, ContextString);
  
@@ -78,8 +74,7 @@ void ANonPlayerCharacter::AnswerToPlayer(FName PlayerLine, TArray<FSubtitle>& Su
 		FTimerDelegate TimerDel;
  
 		TimerDel.BindUFunction(this, FName("Talk"), Dialog->SFX, Dialog->Subtitles);
- 
-		//Talk to the player after the delay time has passed
+
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, Delay, false);
 	}
 }
