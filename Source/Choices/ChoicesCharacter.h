@@ -1,4 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -51,22 +50,16 @@ public:
 	///
 	void GeneratePlayerLines(UDataTable& PlayerLines);
  
-	/*This array is essentially an Array of Excerpts from our dialogs!*/
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FString> Questions;
- 
-	/*Performs the actual talking - informs the associated pawn if necessary in order to answer
-	The subtitles array contain all the subtitles for this talk - it should be passed to our UI*/
+	
 	UFUNCTION(BlueprintCallable, Category = DialogSystem)
-    void Talk(FString Excerpt, TArray<FSubtitle>& Subtitles);
+        void Talk(FString Excerpt, TArray<FSubtitle>& Subtitles);
  
-	/*Enables / disables our talk ability. The player can't talk if he's not in a valid range*/
 	void SetTalkRangeStatus(bool Status) { bIsInInteractionRange = Status; }
  
-	/*Sets a new associated pawn*/
 	void SetAssociatedNPC(ANonPlayerCharacter* Pawn) { AssociatedNPC = Pawn; }
  
-	/*Retrieves the UI reference*/
 	FORCEINLINE UChoicesUI* GetUI() { return UI; }
 
 protected:
@@ -97,27 +90,23 @@ protected:
 
 	//////////////////////////////////////////////////////////////////////////////////////////
 	
-	/*The component responsible for playing our SFX*/
 	UPROPERTY(VisibleAnywhere)
 	UAudioComponent* AudioComp;
  
-	/*Opens or closes the conversation UI*/
 	UFUNCTION(BlueprintImplementableEvent, Category = DialogSystem)
     void ToggleUI();
  
-	/*UI Reference*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UChoicesUI* UI;
 
 protected:
-	// APawn interface
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	// End of APawn interface
+
 
 public:
-	/** Returns CameraBoom subobject **/
+	
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
 
